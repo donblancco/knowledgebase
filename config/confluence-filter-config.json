@@ -1,0 +1,28 @@
+{
+  "filterConfiguration": {
+    "patternObjectFilter": {
+      "filters": [
+        {
+          "inclusionFilters": [
+            "documentation"
+          ],
+          "objectType": "Space"
+        },
+        {
+          "exclusionFilters": [
+            "*.gif",
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.bmp",
+            "*.tiff",
+            "*.svg",
+            "*.webp"
+          ],
+          "objectType": "Attachment"
+        }
+      ]
+    },
+    "type": "PATTERN"
+  }
+}

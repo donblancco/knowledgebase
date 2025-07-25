@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+kb_venv/
+lambda_env/
+lambda_deps/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# AWS
+build/*.zip
+deployment_package/
+.aws/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Logs
+*.log
+
+# Data files
+data/crawled_html/
+data/technical_docs/crawled_docs_selenium/
+*.csv
+
+# Test files (keeping directory structure but not test data)
+tests/response*.json
+tests/test_*.json
+
+# Temporary files
+response*.json
+
+# Backup files
+*.backup

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多言語化 Knowledge Base Q&A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #40b87c 0%, #2d8a5f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 50px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+        }
+
+        .search-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .search-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .answer-card {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .answer-text {
+            color: #2c3e50;
+            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .confidence-score {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .sources-section {
+            margin-top: 20px;
+        }
+
+        .sources-title {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .source-item {
+            background: white;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .source-item:hover {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .source-score {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .source-uri {
+            color: #3498db;
+            font-size: 14px;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples-title {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .example-item {
+            background: #f8f9fa;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .example-item:hover {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>多言語化 Knowledge Base</h1>
+            <p>AI-powered Q&A System using AWS Bedrock</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-form">
+                <input type="text" class="search-input" id="questionInput" placeholder="多言語化について質問してください..." />
+                <button class="search-button" id="searchButton" onclick="askQuestion()">質問する</button>
+            </div>
+
+            <div class="loading" id="loadingSection">
+                <div class="loading-spinner"></div>
+                <p>AI が回答を生成しています...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="answer-card">
+                <div class="answer-text" id="answerText"></div>
+                <div class="confidence-score" id="confidenceScore"></div>
+            </div>
+
+            <div class="sources-section">
+                <div class="sources-title">参考ソース</div>
+                <div id="sourcesList"></div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <div class="examples-title">質問例</div>
+            <div class="example-item" onclick="setQuestion(this)">サイト内検索について教えて</div>
+            <div class="example-item" onclick="setQuestion(this)">プロキシ方式の導入方法は？</div>
+            <div class="example-item" onclick="setQuestion(this)">用語集の使い方を教えて</div>
+            <div class="example-item" onclick="setQuestion(this)">言語切替ウィジェットの設定方法は？</div>
+        </div>
+    </div>
+
+    <script>
+        // API設定
+        const API_CONFIG = {
+            // ローカル開発用
+            LOCAL_URL: 'http://localhost:8001',
+            // Lambda関数のAPI Gateway URL（本番環境用）
+            LAMBDA_URL: 'https://1d3k2lygvg.execute-api.us-east-1.amazonaws.com/dev'
+        };
+
+        // 現在の環境を判定
+        const isLocalhost = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.protocol === 'file:';
+        const API_BASE_URL = isLocalhost ? API_CONFIG.LOCAL_URL : API_CONFIG.LAMBDA_URL;
+        
+        // デバッグ情報を出力
+        console.log('Current location:', window.location);
+        console.log('Is localhost:', isLocalhost);
+        console.log('API Base URL:', API_BASE_URL);
+
+        // DOM要素
+        const questionInput = document.getElementById('questionInput');
+        const searchButton = document.getElementById('searchButton');
+        const loadingSection = document.getElementById('loadingSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultSection = document.getElementById('resultSection');
+        const answerText = document.getElementById('answerText');
+        const confidenceScore = document.getElementById('confidenceScore');
+        const sourcesList = document.getElementById('sourcesList');
+
+        // エンターキーで質問を送信
+        questionInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+
+        // 質問例をクリックした時の処理
+        function setQuestion(element) {
+            questionInput.value = element.textContent;
+            questionInput.focus();
+        }
+
+        // 質問を送信する関数
+        async function askQuestion() {
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                showError('質問を入力してください。');
+                return;
+            }
+
+            // UI状態を更新
+            setLoading(true);
+            hideError();
+            hideResults();
+
+            try {
+                // APIリクエストを送信
+                const response = await fetch(`${API_BASE_URL}/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        max_results: 3
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // 成功時の処理
+                    displayResults(data);
+                } else {
+                    // エラー時の処理
+                    showError(data.error || 'エラーが発生しました。');
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                showError('サーバーとの通信に失敗しました。');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // 結果を表示する関数
+        function displayResults(data) {
+            // 回答テキストを表示
+            answerText.textContent = data.answer;
+            
+            // 信頼度スコアを表示
+            const confidence = Math.round(data.confidence * 100);
+            confidenceScore.textContent = `信頼度: ${confidence}%`;
+            
+            // 信頼度に応じて色を変更
+            if (confidence >= 80) {
+                confidenceScore.style.backgroundColor = '#27ae60';
+            } else if (confidence >= 60) {
+                confidenceScore.style.backgroundColor = '#f39c12';
+            } else {
+                confidenceScore.style.backgroundColor = '#e74c3c';
+            }
+
+            // ソースを表示
+            sourcesList.innerHTML = '';
+            data.sources.forEach((source, index) => {
+                const sourceItem = document.createElement('div');
+                sourceItem.className = 'source-item';
+                
+                const score = Math.round(source.score * 100);
+                const fileName = source.uri.split('/').pop().replace('.html', '');
+                
+                sourceItem.innerHTML = `
+                    <div class="source-score">関連度: ${score}%</div>
+                    <div class="source-uri">${fileName}</div>
+                `;
+                
+                sourcesList.appendChild(sourceItem);
+            });
+
+            // 結果セクションを表示
+            resultSection.style.display = 'block';
+            
+            // 結果にスクロール
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ローディング状態を設定
+        function setLoading(isLoading) {
+            loadingSection.style.display = isLoading ? 'block' : 'none';
+            searchButton.disabled = isLoading;
+            searchButton.textContent = isLoading ? '処理中...' : '質問する';
+        }
+
+        // エラーメッセージを表示
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // エラーメッセージを非表示
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // 結果を非表示
+        function hideResults() {
+            resultSection.style.display = 'none';
+        }
+
+        // ローカル開発用のモックAPI
+        if (isLocalhost) {
+            // 開発用のメッセージを表示
+            console.log('開発モード: ローカルAPIサーバーを起動してください');
+        }
+    </script>
+</body>
+</html>

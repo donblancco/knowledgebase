@@ -1,0 +1,36 @@
+[
+    {
+        "Rules": [
+            {
+                "Permission": [
+                    "aoss:CreateCollectionItems",
+                    "aoss:DeleteCollectionItems",
+                    "aoss:UpdateCollectionItems",
+                    "aoss:DescribeCollectionItems"
+                ],
+                "Resource": [
+                    "collection/bedrock-kb-qa-collection"
+                ],
+                "ResourceType": "collection"
+            },
+            {
+                "Permission": [
+                    "aoss:CreateIndex",
+                    "aoss:DeleteIndex",
+                    "aoss:UpdateIndex",
+                    "aoss:DescribeIndex",
+                    "aoss:ReadDocument",
+                    "aoss:WriteDocument"
+                ],
+                "Resource": [
+                    "index/bedrock-kb-qa-collection/*"
+                ],
+                "ResourceType": "index"
+            }
+        ],
+        "Principal": [
+            "arn:aws:iam::279511116447:role/bedrock-kb-qa-kb-role",
+            "arn:aws:iam::279511116447:user/harukaNagashima"
+        ]
+    }
+]
